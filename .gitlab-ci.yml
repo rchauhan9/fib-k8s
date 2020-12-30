@@ -1,0 +1,13 @@
+image: docker:latest
+
+variables:
+  SHA: $(git rev-parse HEAD)
+
+stages:
+  - docker-auth
+
+setup:
+  stage: docker-auth
+  script:
+    - echo "commit sha " $SHA
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
