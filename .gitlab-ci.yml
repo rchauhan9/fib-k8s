@@ -1,48 +1,31 @@
 image: docker:latest
 
 stages:
-  - docker-auth
-  - docker-build
-  - docker-push
+  - docker
   - k8s-deploy
 
 services:
   - docker:dind
 
-setup:
-  stage: docker-auth
-  script:
-    - echo "commit sha " $CI_COMMIT_SHA
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-
 client-build:
-  stage: docker-build
+  stage: docker
   script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker build -t rchauhan9/multi-client:latest -t rchauhan9/multi-client:$CI_COMMIT_SHA -f ./client/Dockerfile ./client
-
-server-build:
-  stage: docker-build
-  script:
-    - docker build -t rchauhan9/multi-server:latest -t rchauhan9/multi-server:$CI_COMMIT_SHA -f ./server/Dockerfile ./server
-
-worker-build:
-  stage: docker-build
-  script:
-    - docker build -t rchauhan9/multi-worker:latest -t rchauhan9/multi-worker:$CI_COMMIT_SHA -f ./worker/Dockerfile ./worker
-
-client-push:
-  stage: docker-push
-  script:
     - docker push rchauhan9/multi-client:$CI_COMMIT_SHA
 
-server-push:
-  stage: docker-push
+server-build:
+  stage: docker
   script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t rchauhan9/multi-server:latest -t rchauhan9/multi-server:$CI_COMMIT_SHA -f ./server/Dockerfile ./server
     - docker push rchauhan9/multi-server:$CI_COMMIT_SHA
 
-worker-push:
-  stage: docker-push
+worker-build:
+  stage: docker
   script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t rchauhan9/multi-worker:latest -t rchauhan9/multi-worker:$CI_COMMIT_SHA -f ./worker/Dockerfile ./worker
     - docker push rchauhan9/multi-worker:$CI_COMMIT_SHA
 
 k8s-deploy:
