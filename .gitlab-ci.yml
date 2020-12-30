@@ -6,7 +6,11 @@ variables:
 stages:
   - docker-auth
 
+services:
+  - docker:dind
+
 setup:
+  image: docker:latest
   stage: docker-auth
   script:
     - echo "commit sha " $SHA
