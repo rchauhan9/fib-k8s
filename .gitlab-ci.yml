@@ -18,32 +18,32 @@ setup:
 client-build:
   stage: docker-build
   script:
-    - docker build -t rchauhan9/multi-client:latest -t rchauhan9/multi-client:$SHA -f ./client/Dockerfile ./client
+    - docker build -t rchauhan9/multi-client:latest -t rchauhan9/multi-client:$CI_COMMIT_SHA -f ./client/Dockerfile ./client
 
 server-build:
   stage: docker-build
   script:
-    - docker build -t rchauhan9/multi-server:latest -t rchauhan9/multi-server:$SHA -f ./server/Dockerfile ./server
+    - docker build -t rchauhan9/multi-server:latest -t rchauhan9/multi-server:$CI_COMMIT_SHA -f ./server/Dockerfile ./server
 
 worker-build:
   stage: docker-build
   script:
-    - docker build -t rchauhan9/multi-worker:latest -t rchauhan9/multi-worker:$SHA -f ./worker/Dockerfile ./worker
+    - docker build -t rchauhan9/multi-worker:latest -t rchauhan9/multi-worker:$CI_COMMIT_SHA -f ./worker/Dockerfile ./worker
 
 client-push:
   stage: docker-push
   script:
-    - docker push rchauhan9/multi-client:$SHA
+    - docker push rchauhan9/multi-client:$CI_COMMIT_SHA
 
 server-push:
   stage: docker-push
   script:
-    - docker push rchauhan9/multi-server:$SHA
+    - docker push rchauhan9/multi-server:$CI_COMMIT_SHA
 
 worker-push:
   stage: docker-push
   script:
-    - docker push rchauhan9/multi-worker:$SHA
+    - docker push rchauhan9/multi-worker:$CI_COMMIT_SHA
 
 k8s-deploy:
   stage: k8s-deploy
