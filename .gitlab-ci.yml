@@ -11,16 +11,16 @@ client-build:
   stage: docker
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -f ./client/Dockerfile ./client
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker build -t "$CI_REGISTRY_IMAGE":latest -t "$CI_REGISTRY_IMAGE":$CI_COMMIT_SHA -f ./client/Dockerfile ./client
+    - docker push "$CI_REGISTRY_IMAGE":$CI_COMMIT_SHA
 
 #server-build:
 #  stage: docker
 #  script:
 #    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#    - docker build -t rchauhan9/multi-server:latest -t rchauhan9/multi-server:$CI_COMMIT_SHA -f ./server/Dockerfile ./server
-#    - docker push rchauhan9/multi-server:$CI_COMMIT_SHA
-#
+#    - docker build -t "$CI_REGISTRY_SERVER_IMAGE:latest -t $CI_REGISTRY_SERVER_IMAGE:$CI_COMMIT_SHA -f ./server/Dockerfile ./server
+#    - docker push $CI_REGISTRY_SERVER_IMAGE:$CI_COMMIT_SHA
+
 #worker-build:
 #  stage: docker
 #  script:
