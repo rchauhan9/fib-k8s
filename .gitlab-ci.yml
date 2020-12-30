@@ -1,17 +1,51 @@
 image: docker:latest
 
-variables:
-  SHA: $(git rev-parse HEAD)
-
 stages:
   - docker-auth
+  - docker-build
+  - docker-push
+  - k8s-deploy
 
 services:
   - docker:dind
 
 setup:
-  image: docker:latest
   stage: docker-auth
   script:
-    - echo "commit sha " $SHA
+    - echo "commit sha " $CI_COMMIT_SHA
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+client-build:
+  stage: docker-build
+  script:
+    - docker build -t rchauhan9/multi-client:latest -t rchauhan9/multi-client:$SHA -f ./client/Dockerfile ./client
+
+server-build:
+  stage: docker-build
+  script:
+    - docker build -t rchauhan9/multi-server:latest -t rchauhan9/multi-server:$SHA -f ./server/Dockerfile ./server
+
+worker-build:
+  stage: docker-build
+  script:
+    - docker build -t rchauhan9/multi-worker:latest -t rchauhan9/multi-worker:$SHA -f ./worker/Dockerfile ./worker
+
+client-push:
+  stage: docker-push
+  script:
+    - docker push rchauhan9/multi-client:$SHA
+
+server-push:
+  stage: docker-push
+  script:
+    - docker push rchauhan9/multi-server:$SHA
+
+worker-push:
+  stage: docker-push
+  script:
+    - docker push rchauhan9/multi-worker:$SHA
+
+k8s-deploy:
+  stage: k8s-deploy
+  script:
+    - echo "KUBERNETES DEPLOY STAGE - NOT YET IMPLEMENETED"
