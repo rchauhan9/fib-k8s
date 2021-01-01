@@ -1,39 +1,45 @@
 image: docker:latest
 
 stages:
-#  - docker
+  - test
+  - package
   - k8s-deploy
 
 services:
   - docker:dind
 
-#client-build:
-#  stage: docker
-#  script:
-#    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#    - docker build -t "$CLIENT_IMAGE_NAME:latest" -t "$CLIENT_IMAGE_NAME:$CI_COMMIT_SHA" -f ./client/Dockerfile ./client
-#    - docker push "$CLIENT_IMAGE_NAME:$CI_COMMIT_SHA"
-#
-#server-build:
-#  stage: docker
-#  script:
-#    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#    - docker build -t "$SERVER_IMAGE_NAME:latest" -t "$SERVER_IMAGE_NAME:$CI_COMMIT_SHA" -f ./server/Dockerfile ./server
-#    - docker push "$SERVER_IMAGE_NAME:$CI_COMMIT_SHA"
-#
-#worker-build:
-#  stage: docker
-#  script:
-#    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#    - docker build -t "$WORKER_IMAGE_NAME:latest" -t "$WORKER_IMAGE_NAME:$CI_COMMIT_SHA" -f ./worker/Dockerfile ./worker
-#    - docker push "$WORKER_IMAGE_NAME:$CI_COMMIT_SHA"
+client-test:
+  stage: test
+  script:
+    - docker build -t rchauhan9/react-test -f ./client/Dockerfile.dev ./client
+    - docker run -e CI=true rchauhan9/react-test npm test
+
+client-build:
+  stage: package
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t "$CLIENT_IMAGE_NAME:latest" -t "$CLIENT_IMAGE_NAME:$CI_COMMIT_SHA" -f ./client/Dockerfile ./client
+    - docker push "$CLIENT_IMAGE_NAME:$CI_COMMIT_SHA"
+
+server-build:
+  stage: package
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t "$SERVER_IMAGE_NAME:latest" -t "$SERVER_IMAGE_NAME:$CI_COMMIT_SHA" -f ./server/Dockerfile ./server
+    - docker push "$SERVER_IMAGE_NAME:$CI_COMMIT_SHA"
+
+worker-build:
+  stage: package
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t "$WORKER_IMAGE_NAME:latest" -t "$WORKER_IMAGE_NAME:$CI_COMMIT_SHA" -f ./worker/Dockerfile ./worker
+    - docker push "$WORKER_IMAGE_NAME:$CI_COMMIT_SHA"
 
 k8s-deploy:
   image: google/cloud-sdk
   stage: k8s-deploy
   script:
     - openssl aes-256-cbc -d -a -in service-account.json.ossl -out service-account.json -pass env:OSSLPASS
-    - apt-get install kubectl
     - gcloud auth activate-service-account --key-file service-account.json
     - gcloud config set project fib-k8s-300114
     - gcloud config set compute/zone europe-west2-a
