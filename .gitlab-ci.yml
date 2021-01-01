@@ -38,3 +38,8 @@ k8s-deploy:
     - gcloud config set project fib-k8s-300114
     - gcloud config set compute/zone europe-west2-a
     - gcloud container clusters get-credentials fib-cluster
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - kubectl apply -f k8s/
+    - kubectl set image deployments/server-deployment server=rchauhan9/multi-server:$SHA
+    - kubectl set image deployments/client-deployment client=rchauhan9/multi-client:$SHA
+    - kubectl set image deployments/worker-deployment worker=rchauhan9/multi-worker:$SHA
