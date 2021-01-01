@@ -33,7 +33,7 @@ k8s-deploy:
   stage: k8s-deploy
   script:
     - openssl aes-256-cbc -d -a -in service-account.json.ossl -out service-account.json -pass env:OSSLPASS
-    - gcloud components update kubectl
+    - sudo apt-get install kubectl
     - gcloud auth activate-service-account --key-file service-account.json
     - gcloud config set project fib-k8s-300114
     - gcloud config set compute/zone europe-west2-a
