@@ -15,6 +15,8 @@ client-test:
     - docker run -e CI=true rchauhan9/react-test npm test
 
 client-build:
+  only:
+    - master
   stage: package
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -22,6 +24,8 @@ client-build:
     - docker push "$CLIENT_IMAGE_NAME:$CI_COMMIT_SHA"
 
 server-build:
+  only:
+    - master
   stage: package
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -29,6 +33,8 @@ server-build:
     - docker push "$SERVER_IMAGE_NAME:$CI_COMMIT_SHA"
 
 worker-build:
+  only:
+    - master
   stage: package
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -36,6 +42,8 @@ worker-build:
     - docker push "$WORKER_IMAGE_NAME:$CI_COMMIT_SHA"
 
 k8s-deploy:
+  only:
+    - master
   image: google/cloud-sdk
   stage: k8s-deploy
   script:
